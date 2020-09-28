@@ -7,10 +7,8 @@ class HashTableEntry:
         self.value = value
         self.next = None
 
-
 # Hash table can't have fewer than this many slots
 MIN_CAPACITY = 8
-
 
 class HashTable:
     """
@@ -22,7 +20,9 @@ class HashTable:
 
     def __init__(self, capacity):
         # Your code here
-
+        self.capacity = capacity
+        self.data = [None for i in range(capacity)]
+        self.size = 0
 
     def get_num_slots(self):
         """
@@ -35,6 +35,7 @@ class HashTable:
         Implement this.
         """
         # Your code here
+        return self.capacity
 
 
     def get_load_factor(self):
@@ -44,17 +45,27 @@ class HashTable:
         Implement this.
         """
         # Your code here
-
+        return self.size / self.get_num_slots()
 
     def fnv1(self, key):
         """
         FNV-1 Hash, 64-bit
-
         Implement this, and/or DJB2.
         """
 
         # Your code here
 
+        # Constants
+        # FNV_prime = 1099511628211
+        # offset_basis = 14695981039346656037
+
+        # #FNV-1a Hash Function
+        # hash = offset_basis + key
+
+        # for char in string:
+        #     hash = hash * FNV_prime
+        #     hash = hash ^ ord(char)
+        # return hash
 
     def djb2(self, key):
         """
@@ -63,7 +74,12 @@ class HashTable:
         Implement this, and/or FNV-1.
         """
         # Your code here
+        hash = 5381
 
+        for i in key:
+            hash = ((hash << 5) + hash) + ord(i)
+        
+        return hash & 0xFFFFFFFF
 
     def hash_index(self, key):
         """
@@ -76,46 +92,104 @@ class HashTable:
     def put(self, key, value):
         """
         Store the value with the given key.
-
         Hash collisions should be handled with Linked List Chaining.
-
         Implement this.
         """
         # Your code here
 
+        # index = hash_index(value)
+        # HashTable[index] = HashTableEntry(key, value)
+
+        # pool = self.hash_index(key)
+
+        # if self.data[pool] is None:
+        #     self.data[pool] = HashTableEntry(key, value)
+        #     self.size += 1
+        
+        # else:
+        #     current = self.data[pool]
+
+        #     while current.next is not None and current.key != key:
+        #         current = current.next
+
+        #     if current.key == key:
+        #         current.value = value
+            
+        #     else:
+        #         current.next = HashTableEntry(key, value)
+        #         self.size += 1
+
+        i = self.hash_index(key)
+        self.data[i] = HashTableEntry(key, value)
 
     def delete(self, key):
         """
         Remove the value stored with the given key.
-
         Print a warning if the key is not found.
-
         Implement this.
         """
         # Your code here
+        # pool = self.hash_index(key)
 
+        # current = self.data[pool]
+        
+        # if current is None:
+        #     print('Not found')
+        # elif current.key == key:
+        #     self.data[pool] = current.next
+        #     self.size -= 1
+        # else:
+        #     while current.next is not None and current.next.key != key:
+        #         current = current.next
+
+        #     if current.next.key == key:
+        #         current.next = current.next.next
+        #         self.size -= 1
+        #     else:
+        #         print('Not found')
+        x = None
+        self.put(key, x)
 
     def get(self, key):
         """
         Retrieve the value stored with the given key.
-
         Returns None if the key is not found.
-
         Implement this.
         """
         # Your code here
 
-
-    def resize(self, new_capacity):
-        """
-        Changes the capacity of the hash table and
-        rehashes all key/value pairs.
-
-        Implement this.
-        """
-        # Your code here
+        # index = hash_index(key)
+        # HashTableEntry = HashTable[index]
+        # return HashTableEntry.value
 
 
+    # def resize(self, new_capacity):
+    #     """
+    #     Changes the capacity of the hash table and
+    #     rehashes all key/value pairs.
+
+    #     Implement this.
+    #     """
+    #     # Your code here
+
+        # pool = self.hash_index(key)
+
+        # if self.data[pool] is not None:
+        #     current = self.data[pool]
+
+        #     while current is not None and current.key != key:
+        #         current = current.next
+
+        #     if current:
+        #         return current.value
+        #     else:
+        #         return None
+        
+        # else:
+        #     return None
+        i = self.hash_index(key)
+        current = self.data[i]
+        return current.value
 
 if __name__ == "__main__":
     ht = HashTable(8)
