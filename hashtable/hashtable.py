@@ -1,7 +1,5 @@
 class HashTableEntry:
-    """
-    Linked List hash table key/value pair
-    """
+    """Linked List hash table key/value pair"""
     def __init__(self, key, value):
         self.key = key
         self.value = value
@@ -11,12 +9,7 @@ class HashTableEntry:
 MIN_CAPACITY = 8
 
 class HashTable:
-    """
-    A hash table that with `capacity` buckets
-    that accepts string keys
-
-    Implement this.
-    """
+    """A hash table that with `capacity` buckets that accepts string keys.Implement this."""
 
     def __init__(self, capacity):
         # Your code here
@@ -25,54 +18,17 @@ class HashTable:
         self.size = 0
 
     def get_num_slots(self):
-        """
-        Return the length of the list you're using to hold the hash
-        table data. (Not the number of items stored in the hash table,
-        but the number of slots in the main list.)
-
-        One of the tests relies on this.
-
-        Implement this.
-        """
+        """Return the length of the list you're using to hold the hash table data. (Not the number of items stored in the hash table, but the number of slots in the main list.) One of the tests relies on this. Implement this."""
         # Your code here
         return self.capacity
 
-
     def get_load_factor(self):
-        """
-        Return the load factor for this hash table.
-
-        Implement this.
-        """
+        """Return the load factor for this hash table. Implement this."""
         # Your code here
         return self.size / self.get_num_slots()
 
-    def fnv1(self, key):
-        """
-        FNV-1 Hash, 64-bit
-        Implement this, and/or DJB2.
-        """
-
-        # Your code here
-
-        # Constants
-        # FNV_prime = 1099511628211
-        # offset_basis = 14695981039346656037
-
-        # #FNV-1a Hash Function
-        # hash = offset_basis + key
-
-        # for char in string:
-        #     hash = hash * FNV_prime
-        #     hash = hash ^ ord(char)
-        # return hash
-
     def djb2(self, key):
-        """
-        DJB2 hash, 32-bit
-
-        Implement this, and/or FNV-1.
-        """
+        """DJB2 hash, 32-bit. Implement this, and/or FNV-1."""
         # Your code here
         hash = 5381
 
@@ -82,114 +38,101 @@ class HashTable:
         return hash & 0xFFFFFFFF
 
     def hash_index(self, key):
-        """
-        Take an arbitrary key and return a valid integer index
-        between within the storage capacity of the hash table.
-        """
-        #return self.fnv1(key) % self.capacity
+        """Take an arbitrary key and return a valid integer index between within the storage capacity of the hash table."""
         return self.djb2(key) % self.capacity
 
     def put(self, key, value):
-        """
-        Store the value with the given key.
-        Hash collisions should be handled with Linked List Chaining.
-        Implement this.
-        """
+        """Store the value with the given key. Hash collisions should be handled with Linked List Chaining. Implement this. """
         # Your code here
 
-        # index = hash_index(value)
-        # HashTable[index] = HashTableEntry(key, value)
-
-        # pool = self.hash_index(key)
-
-        # if self.data[pool] is None:
-        #     self.data[pool] = HashTableEntry(key, value)
-        #     self.size += 1
-        
-        # else:
-        #     current = self.data[pool]
-
-        #     while current.next is not None and current.key != key:
-        #         current = current.next
-
-        #     if current.key == key:
-        #         current.value = value
-            
-        #     else:
-        #         current.next = HashTableEntry(key, value)
-        #         self.size += 1
-
         i = self.hash_index(key)
-        self.data[i] = HashTableEntry(key, value)
+
+        if self.data[i] is None:
+            self.data[i] = HashTableEntry(key, value)
+            self.size += 1
+
+            if self.get_load_factor() > .7:
+                self.resize(self.capacity * 2)
+        
+        else:
+            cur = self.data[i]
+
+            while cur.next is not None and cur.key != key:
+                cur = cur.next
+
+            if cur.key == key:
+                cur.value = value
+            else:
+                cur.next = HashTableEntry(key, value)
+                self.size += 1
+
+                if self.get_load_factor() > .7:
+                    self.resize(self.capacity * 2)
 
     def delete(self, key):
-        """
-        Remove the value stored with the given key.
-        Print a warning if the key is not found.
-        Implement this.
-        """
+        """Remove the value stored with the given key. Print a warning if the key is not found. Implement this."""
         # Your code here
-        # pool = self.hash_index(key)
+        i = self.hash_index(key)
+        cur = self.data[i]
 
-        # current = self.data[pool]
-        
-        # if current is None:
-        #     print('Not found')
-        # elif current.key == key:
-        #     self.data[pool] = current.next
-        #     self.size -= 1
-        # else:
-        #     while current.next is not None and current.next.key != key:
-        #         current = current.next
+        if cur is None:
+            print('not found')
+        elif cur.key == key:
+            self.data[i] = cur.next
+            self.size -= 1
+        else:
+            while cur.next is not None and cur.netxt.key != key:
+                cur = cur.next
 
-        #     if current.next.key == key:
-        #         current.next = current.next.next
-        #         self.size -= 1
-        #     else:
-        #         print('Not found')
-        x = None
-        self.put(key, x)
+            if cur.next.key == key:
+                cur.next = cur.next.next
+                self.size -= 1
+            else:
+                print('not found')
 
     def get(self, key):
-        """
-        Retrieve the value stored with the given key.
-        Returns None if the key is not found.
-        Implement this.
-        """
+        """Retrieve the value stored with the given key. Returns None if the key is not found. Implement this."""
         # Your code here
-
-        # index = hash_index(key)
-        # HashTableEntry = HashTable[index]
-        # return HashTableEntry.value
-
-
-    # def resize(self, new_capacity):
-    #     """
-    #     Changes the capacity of the hash table and
-    #     rehashes all key/value pairs.
-
-    #     Implement this.
-    #     """
-    #     # Your code here
-
-        # pool = self.hash_index(key)
-
-        # if self.data[pool] is not None:
-        #     current = self.data[pool]
-
-        #     while current is not None and current.key != key:
-        #         current = current.next
-
-        #     if current:
-        #         return current.value
-        #     else:
-        #         return None
-        
-        # else:
-        #     return None
         i = self.hash_index(key)
-        current = self.data[i]
-        return current.value
+
+        if self.data[i] is not None:
+            cur = self.data[i]
+
+            while cur is not None and cur.key != key:
+                cur = cur.next
+            
+            if cur:
+                return cur.value
+            else:
+                return None
+        else:
+            return None
+
+    def resize(self, new_capacity):
+        """Changes the capacity of the hash table and rehashes all key/value pairs. Implement this."""
+        # Your code here
+        self.capacity = new_capacity
+        new_list = [None for i in range(new_capacity)]
+
+        for linked_list in self.data:
+            cur = linked_list
+
+            while cur is not None:
+                i = self.hash_index(cur.key)
+
+                if new_list[i] is None:
+                    new_list[i] = HashTableEntry(cur.key, cur.value)
+                else:
+                    new_cur = new_list[i]
+
+                    while new_cur.next is not None:
+                        new_cur = new_cur.next
+
+                    new_cur.next = HashTableEntry(cur.key, cur.value)                   
+
+                cur = cur.next
+
+        self.data = new_list
 
 if __name__ == "__main__":
     ht = HashTable(8)
